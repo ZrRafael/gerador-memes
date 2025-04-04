@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Memes</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+</head>
+<body class="dark-theme">
+    <div class="theme-language-controls">
+        <div class="control-group">
+            <button id="themeToggle" class="theme-btn" data-theme="dark">
+                <span class="theme-icon"></span>
+            </button>
+            <button id="languageToggle" class="lang-btn">
+                <span class="lang-text">BR PT</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 data-text="title">Gerador de Memes</h1>
+        
+        <div class="meme-container">
+            <div class="image-container">
+                <img id="memeImage" src="" alt="Imagem do meme">
+                <div class="texts-container"></div>
+                <div class="upload-section">
+                    <input type="file" id="imageInput" accept="image/*">
+                    <label for="imageInput" class="upload-btn" data-text="chooseimage">Escolher Imagem</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="text-controls">
+                <button id="addTextBtn" class="control-btn" data-text="addtext">Adicionar Texto</button>
+                <button id="applyToAllBtn" class="control-btn" data-text="applytoall" data-tooltip="Aplica o estilo (cor e tamanho) do primeiro texto aos demais textos">Aplicar a Todos</button>
+            </div>
+
+            <div class="text-editors">
+                <!-- Aqui serão adicionados os editores de texto dinamicamente -->
+            </div>
+
+            <button id="downloadBtn" class="download-btn" data-text="downloadmeme">Baixar Meme</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
