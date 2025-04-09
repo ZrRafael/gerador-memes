@@ -7,7 +7,8 @@ import {
     doc, 
     getDoc,
     query,
-    orderBy
+    orderBy,
+    where
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const MemeService = {
@@ -39,19 +40,11 @@ const MemeService = {
 
     async saveMeme(memeData) {
         try {
-            const memesCol = collection(db, 'memes');
-            const docRef = await addDoc(memesCol, {
-                title: memeData.title,
-                imageUrl: memeData.imageUrl,
-                type: memeData.type,
-                timestamp: new Date().getTime()
-            });
-            
-            console.log('Meme salvo com ID do documento:', docRef.id);
-            return { id: docRef.id };
+            const docRef = await addDoc(collection(db, "memes"), memeData);
+            return { success: true, id: docRef.id };
         } catch (error) {
-            console.error('Error saving meme:', error);
-            throw error;
+            console.error("Error saving meme: ", error);
+            return { success: false, error };
         }
     },
 
@@ -102,6 +95,17 @@ const MemeService = {
             }
         } catch (error) {
             console.error('Error fetching meme:', error);
+            throw error;
+        }
+    },
+
+    async checkMemeNameExists(name) {
+        try {
+            const q = query(collection(db, "memes"), where("title", "==", name));
+            const querySnapshot = await getDocs(q);
+            return !querySnapshot.empty;
+        } catch (error) {
+            console.error("Error checking meme name: ", error);
             throw error;
         }
     }

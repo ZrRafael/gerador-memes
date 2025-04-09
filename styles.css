@@ -63,7 +63,10 @@ h1 {
     padding-bottom: 20px;
     background: var(--gradient);
     -webkit-background-clip: text;
+    -moz-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
+    -moz-text-fill-color: transparent;
 }
 
 .meme-container {
@@ -297,6 +300,7 @@ input[type="range"] {
     flex: 1;
     height: 8px;
     -webkit-appearance: none;
+    appearance: none; /* Adiciona compatibilidade com outros navegadores */
     background: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     outline: none;
@@ -327,6 +331,11 @@ input[type="color"] {
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    -o-appearance: none;
+    appearance: none;
 }
 
 input[type="color"]:hover {
@@ -342,6 +351,7 @@ input[type="color"]:hover {
     cursor: pointer;
     -webkit-appearance: none;
     -moz-appearance: none;
+    -ms-appearance: none;
     appearance: none;
 }
 
@@ -608,4 +618,269 @@ input[type="color"]:hover {
         max-height: 90%;
         font-size: 24px;
     }
+}
+
+/* Modal personalizado */
+.custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.custom-modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.custom-modal.show .modal-content {
+    transform: translateY(0);
+}
+
+.modal-message {
+    color: var(--text-color);
+    font-size: 1.1em;
+    margin-bottom: 20px;
+    line-height: 1.4;
+    width: 100%;
+    text-align: center;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.modal-button {
+    padding: 12px 30px;
+    background: var(--gradient);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.modal-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(26, 35, 126, 0.4);
+}
+
+.light-theme .modal-button:hover {
+    box-shadow: 0 4px 15px rgba(121, 87, 194, 0.4);
+}
+
+/* Estilo específico para o botão OK */
+#modalButton {
+    margin: 0 auto;
+    display: block;
+}
+
+/* Modal de confirmação */
+.confirm-modal .modal-content {
+    max-width: 450px;
+}
+
+/* Manter os botões de confirmação lado a lado */
+.confirm-modal .modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 25px;
+    width: 100%;
+}
+
+.confirm-modal .modal-button {
+    min-width: 120px;
+}
+
+.confirm-modal .confirm-btn {
+    background: var(--gradient);
+}
+
+.confirm-modal .cancel-btn {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.light-theme .confirm-modal .cancel-btn {
+    background: linear-gradient(135deg, #ff7675 0%, #d63031 100%);
+}
+
+.confirm-modal .modal-message {
+    font-size: 1.2em;
+    padding: 10px 0;
+}
+
+/* Loading no modal */
+.modal-loading {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.modal-loading.show {
+    display: flex;
+}
+
+.modal-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--card-bg);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.modal-loading-text {
+    color: var(--text-color);
+    font-size: 1.1em;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.modal-content > * {
+    transition: opacity 0.3s ease;
+}
+
+.modal-content.loading .modal-message,
+.modal-content.loading .modal-buttons,
+.modal-content.loading #modalButton {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-content.loading .modal-loading {
+    opacity: 1;
+}
+
+/* Input de nome do projeto no modal */
+.modal-input {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    font-size: 1em;
+    transition: all 0.3s ease;
+}
+
+.modal-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.modal-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.light-theme .modal-input {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.light-theme .modal-input::placeholder {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-error {
+    color: #ff4444;
+    font-size: 0.9em;
+    margin-top: 5px;
+    display: none;
+}
+
+.modal-error.show {
+    display: block;
+}
+
+.search-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 0;
+    padding: 0 20px;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 20px;
+    padding-right: 40px;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    box-shadow: var(--box-shadow);
+}
+
+.search-input:focus {
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: var(--text-color);
+    opacity: 0.6;
+}
+
+.search-clear {
+    position: absolute;
+    right: 75px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 4px;
+    opacity: 0.6;
+    font-size: 18px;
+    display: none;
+    transition: opacity 0.3s ease;
+}
+
+.search-clear:hover {
+    opacity: 1;
+}
+
+.search-clear.visible {
+    display: block;
 } 

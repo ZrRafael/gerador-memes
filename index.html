@@ -61,5 +61,19 @@
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="services.js"></script>
     <script type="module" src="script.js"></script>
+
+    <!-- Modal personalizado -->
+    <div class="custom-modal" id="customModal">
+        <div class="modal-content">
+            <p class="modal-message" id="modalMessage"></p>
+            <div class="modal-loading">
+                <div class="modal-spinner"></div>
+                <p class="modal-loading-text">Salvando meme...</p>
+            </div>
+            <input type="text" id="memeNameInput" class="modal-input" style="display: none;" placeholder="Digite o nome do meme">
+            <p class="modal-error" id="modalError">Este nome já está em uso. Por favor, escolha outro.</p>
+            <button class="modal-button" id="modalButton">OK</button>
+        </div>
+    </div>
 </body>
 </html> 

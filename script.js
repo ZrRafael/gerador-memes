@@ -31,7 +31,19 @@ document.addEventListener('DOMContentLoaded', () => {
             text: 'Texto',
             title: 'Gerador de Memes',
             editor: 'Editor',
-            projects: 'Projetos'
+            projects: 'Projetos',
+            'confirm-download': 'Tem certeza que deseja baixar este meme?',
+            'confirm-save': 'Tem certeza que deseja salvar este meme?',
+            'ok': 'OK',
+            'save': 'Salvar',
+            'cancel': 'Cancelar',
+            'load-image-first': 'Por favor, carregue uma imagem primeiro!',
+            'add-text-first': 'Adicione pelo menos um texto primeiro!',
+            'meme-saved': 'Meme salvo com sucesso!',
+            'error-saving': 'Erro ao salvar o meme. Por favor, tente novamente.',
+            'enter-meme-name': 'Digite um nome para o meme:',
+            'name-exists': 'Este nome já está em uso. Por favor, escolha outro.',
+            'name-required': 'O nome do meme é obrigatório.'
         },
         en: {
             chooseimage: 'Choose Image',
@@ -45,7 +57,19 @@ document.addEventListener('DOMContentLoaded', () => {
             text: 'Text',
             title: 'Meme Generator',
             editor: 'Editor',
-            projects: 'Projects'
+            projects: 'Projects',
+            'confirm-download': 'Are you sure you want to download this meme?',
+            'confirm-save': 'Are you sure you want to save this meme?',
+            'ok': 'OK',
+            'save': 'Save',
+            'cancel': 'Cancel',
+            'load-image-first': 'Please load an image first!',
+            'add-text-first': 'Please add at least one text first!',
+            'meme-saved': 'Meme saved successfully!',
+            'error-saving': 'Error saving meme. Please try again.',
+            'enter-meme-name': 'Enter a name for the meme:',
+            'name-exists': 'This name is already in use. Please choose another one.',
+            'name-required': 'Meme name is required.'
         }
     };
 
@@ -198,7 +222,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Adicionar novo texto
     addTextBtn.addEventListener('click', () => {
         if (!imageLoaded) {
-            alert('Por favor, carregue uma imagem primeiro!');
+            const currentLang = isEnglish ? 'en' : 'pt';
+            showModal(translations[currentLang]['load-image-first']);
             return;
         }
 
@@ -417,7 +442,8 @@ document.addEventListener('DOMContentLoaded', () => {
     applyToAllBtn.addEventListener('click', () => {
         const texts = document.querySelectorAll('.text-overlay');
         if (texts.length === 0) {
-            alert('Adicione pelo menos um texto primeiro!');
+            const currentLang = isEnglish ? 'en' : 'pt';
+            showModal(translations[currentLang]['add-text-first']);
             return;
         }
 
@@ -444,76 +470,317 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Função para mostrar o modal personalizado
+    function showModal(message) {
+        const modal = document.getElementById('customModal');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalButton = document.getElementById('modalButton');
+        const currentLang = isEnglish ? 'en' : 'pt';
+
+        modalMessage.textContent = message;
+        modalButton.textContent = translations[currentLang].ok;
+
+        modal.classList.add('show');
+
+        modalButton.onclick = () => {
+            modal.classList.remove('show');
+        };
+    }
+
+    // Função para mostrar o modal de confirmação
+    function showConfirmModal(message, onConfirm) {
+        const modal = document.getElementById('customModal');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalButtons = document.getElementById('modalButtons');
+        const currentLang = isEnglish ? 'en' : 'pt';
+
+        // Remover o botão OK padrão
+        const defaultButton = document.getElementById('modalButton');
+        if (defaultButton) {
+            defaultButton.style.display = 'none';
+        }
+
+        modal.classList.add('confirm-modal');
+        modalMessage.textContent = message;
+
+        // Limpar botões existentes
+        if (modalButtons) {
+            modalButtons.remove();
+        }
+
+        // Criar novos botões
+        const buttonsDiv = document.createElement('div');
+        buttonsDiv.id = 'modalButtons';
+        buttonsDiv.className = 'modal-buttons';
+
+        const confirmBtn = document.createElement('button');
+        confirmBtn.className = 'modal-button confirm-btn';
+        confirmBtn.textContent = currentLang === 'pt' ? 'Confirmar' : 'Confirm';
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'modal-button cancel-btn';
+        cancelBtn.textContent = currentLang === 'pt' ? 'Cancelar' : 'Cancel';
+
+        buttonsDiv.appendChild(confirmBtn);
+        buttonsDiv.appendChild(cancelBtn);
+        modal.querySelector('.modal-content').appendChild(buttonsDiv);
+
+        modal.classList.add('show');
+
+        // Event listeners
+        confirmBtn.onclick = () => {
+            modal.classList.remove('show');
+            modal.classList.remove('confirm-modal');
+            if (defaultButton) {
+                defaultButton.style.display = 'block';
+            }
+            if (onConfirm) onConfirm();
+        };
+
+        cancelBtn.onclick = () => {
+            modal.classList.remove('show');
+            modal.classList.remove('confirm-modal');
+            if (defaultButton) {
+                defaultButton.style.display = 'block';
+            }
+        };
+    }
+
+    // Função para mostrar o modal com loading
+    function showLoadingModal() {
+        const modal = document.getElementById('customModal');
+        const modalContent = modal.querySelector('.modal-content');
+        const modalLoading = modal.querySelector('.modal-loading');
+        const modalLoadingText = modal.querySelector('.modal-loading-text');
+        const currentLang = isEnglish ? 'en' : 'pt';
+
+        modalContent.classList.add('loading');
+        modalLoading.classList.add('show');
+        modalLoadingText.textContent = currentLang === 'pt' ? 'Salvando meme...' : 'Saving meme...';
+        modal.classList.add('show');
+    }
+
+    // Função para atualizar o modal de loading para sucesso
+    function updateModalToSuccess() {
+        const modal = document.getElementById('customModal');
+        const modalContent = modal.querySelector('.modal-content');
+        const modalLoading = modal.querySelector('.modal-loading');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalButton = document.getElementById('modalButton');
+        const modalButtons = document.getElementById('modalButtons');
+        const currentLang = isEnglish ? 'en' : 'pt';
+
+        // Remover os botões de confirmação se existirem
+        if (modalButtons) {
+            modalButtons.remove();
+        }
+
+        // Remover a classe confirm-modal
+        modal.classList.remove('confirm-modal');
+
+        modalContent.classList.remove('loading');
+        modalLoading.classList.remove('show');
+        modalMessage.textContent = translations[currentLang]['meme-saved'];
+        modalButton.textContent = translations[currentLang].ok;
+        modalButton.style.display = 'block';
+
+        modalButton.onclick = () => {
+            modal.classList.remove('show');
+        };
+    }
+
+    // Função para atualizar o modal de loading para erro
+    function updateModalToError() {
+        const modal = document.getElementById('customModal');
+        const modalContent = modal.querySelector('.modal-content');
+        const modalLoading = modal.querySelector('.modal-loading');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalButton = document.getElementById('modalButton');
+        const modalButtons = document.getElementById('modalButtons');
+        const currentLang = isEnglish ? 'en' : 'pt';
+
+        // Remover os botões de confirmação se existirem
+        if (modalButtons) {
+            modalButtons.remove();
+        }
+
+        // Remover a classe confirm-modal
+        modal.classList.remove('confirm-modal');
+
+        modalContent.classList.remove('loading');
+        modalLoading.classList.remove('show');
+        modalMessage.textContent = translations[currentLang]['error-saving'];
+        modalButton.textContent = translations[currentLang].ok;
+        modalButton.style.display = 'block';
+
+        modalButton.onclick = () => {
+            modal.classList.remove('show');
+        };
+    }
+
     // Download da imagem
     downloadBtn.addEventListener('click', () => {
         if (!imageLoaded) {
-            alert('Por favor, carregue uma imagem primeiro!');
+            const currentLang = isEnglish ? 'en' : 'pt';
+            showModal(translations[currentLang]['load-image-first']);
             return;
         }
-        
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Reduzir o tamanho da imagem para no máximo 800x800 mantendo a proporção
-        let width = memeImage.naturalWidth;
-        let height = memeImage.naturalHeight;
-        const maxSize = 800;
-        
-        if (width > height) {
-            if (width > maxSize) {
-                height = Math.round((height * maxSize) / width);
-                width = maxSize;
+
+        const currentLang = isEnglish ? 'en' : 'pt';
+        showConfirmModal(translations[currentLang]['confirm-download'], () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Reduzir o tamanho da imagem para no máximo 800x800 mantendo a proporção
+            let width = memeImage.naturalWidth;
+            let height = memeImage.naturalHeight;
+            const maxSize = 800;
+            
+            if (width > height) {
+                if (width > maxSize) {
+                    height = Math.round((height * maxSize) / width);
+                    width = maxSize;
+                }
+            } else {
+                if (height > maxSize) {
+                    width = Math.round((width * maxSize) / height);
+                    height = maxSize;
+                }
             }
-        } else {
-            if (height > maxSize) {
-                width = Math.round((width * maxSize) / height);
-                height = maxSize;
-            }
-        }
-        
-        canvas.width = width;
-        canvas.height = height;
-        
-        // Desenhar a imagem redimensionada
-        ctx.drawImage(memeImage, 0, 0, width, height);
-        
-        // Desenhar os textos
-        const texts = document.querySelectorAll('.text-overlay');
-        texts.forEach(text => {
-            const x = parseFloat(text.getAttribute('data-x')) || 0;
-            const y = parseFloat(text.getAttribute('data-y')) || 0;
             
-            // Ajustar o tamanho da fonte proporcionalmente
-            const originalSize = parseInt(text.style.fontSize) || 30;
-            const scale = width / memeImage.naturalWidth;
-            const fontSize = Math.round(originalSize * scale);
+            canvas.width = width;
+            canvas.height = height;
             
-            ctx.font = `${fontSize}px Arial`;
-            ctx.fillStyle = text.style.color || '#ffffff';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
+            // Desenhar a imagem redimensionada
+            ctx.drawImage(memeImage, 0, 0, width, height);
             
-            const textX = width / 2 + (x * scale);
-            const textY = height / 2 + (y * scale);
+            // Desenhar os textos
+            const texts = document.querySelectorAll('.text-overlay');
+            texts.forEach(text => {
+                const x = parseFloat(text.getAttribute('data-x')) || 0;
+                const y = parseFloat(text.getAttribute('data-y')) || 0;
+                
+                // Ajustar o tamanho da fonte proporcionalmente
+                const originalSize = parseInt(text.style.fontSize) || 30;
+                const scale = width / memeImage.naturalWidth;
+                const fontSize = Math.round(originalSize * scale);
+                
+                ctx.font = `${fontSize}px Arial`;
+                ctx.fillStyle = text.style.color || '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                const textX = width / 2 + (x * scale);
+                const textY = height / 2 + (y * scale);
+                
+                ctx.fillText(text.textContent, textX, textY);
+            });
             
-            ctx.fillText(text.textContent, textX, textY);
+            // Para download, usar PNG sem compressão para melhor qualidade
+            const imageData = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = 'meme.png';
+            link.href = imageData;
+            link.click();
         });
-        
-        // Para download, usar PNG sem compressão para melhor qualidade
-        const imageData = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.download = 'meme.png';
-        link.href = imageData;
-        link.click();
     });
 
-    // Botão Salvar
-    const saveBtn = document.getElementById('saveBtn');
-    saveBtn.addEventListener('click', async () => {
-        if (!imageLoaded) {
-            alert('Por favor, carregue uma imagem primeiro!');
-            return;
+    // Função para mostrar o modal de nome do meme
+    function showNameInputModal() {
+        const modal = document.getElementById('customModal');
+        const modalContent = modal.querySelector('.modal-content');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalInput = document.getElementById('memeNameInput');
+        const modalError = document.getElementById('modalError');
+        const modalButton = document.getElementById('modalButton');
+        const modalButtons = document.getElementById('modalButtons');
+        const currentLang = isEnglish ? 'en' : 'pt';
+
+        // Remover botões anteriores se existirem
+        if (modalButtons) {
+            modalButtons.remove();
         }
+
+        // Configurar o modal
+        modalMessage.textContent = translations[currentLang]['enter-meme-name'];
+        modalInput.style.display = 'block';
+        modalInput.value = '';
+        modalError.style.display = 'none';
+        
+        // Criar botões
+        const buttonsDiv = document.createElement('div');
+        buttonsDiv.id = 'modalButtons';
+        buttonsDiv.className = 'modal-buttons';
+
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'modal-button confirm-btn';
+        saveBtn.textContent = translations[currentLang].save;
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'modal-button cancel-btn';
+        cancelBtn.textContent = translations[currentLang].cancel;
+
+        buttonsDiv.appendChild(saveBtn);
+        buttonsDiv.appendChild(cancelBtn);
+        modalContent.appendChild(buttonsDiv);
+
+        // Esconder o botão OK padrão
+        if (modalButton) {
+            modalButton.style.display = 'none';
+        }
+
+        modal.classList.add('show');
+
+        // Event listeners
+        saveBtn.onclick = async () => {
+            const memeName = modalInput.value.trim();
+            
+            if (!memeName) {
+                modalError.textContent = translations[currentLang]['name-required'];
+                modalError.style.display = 'block';
+                return;
+            }
+
+            try {
+                const exists = await MemeService.checkMemeNameExists(memeName);
+                if (exists) {
+                    modalError.textContent = translations[currentLang]['name-exists'];
+                    modalError.style.display = 'block';
+                    return;
+                }
+
+                // Proceder com o salvamento
+                modalInput.style.display = 'none';
+                buttonsDiv.remove();
+                await saveMemeWithName(memeName);
+            } catch (error) {
+                console.error('Error checking meme name:', error);
+                modalError.textContent = translations[currentLang]['error-saving'];
+                modalError.style.display = 'block';
+            }
+        };
+
+        cancelBtn.onclick = () => {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modalInput.style.display = 'none';
+                buttonsDiv.remove();
+                if (modalButton) {
+                    modalButton.style.display = 'block';
+                }
+            }, 300);
+        };
+
+        // Permitir salvar com Enter
+        modalInput.onkeypress = (e) => {
+            if (e.key === 'Enter') {
+                saveBtn.click();
+            }
+        };
+    }
+
+    async function saveMemeWithName(memeName) {
+        showLoadingModal();
         
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -568,18 +835,38 @@ document.addEventListener('DOMContentLoaded', () => {
         
         try {
             const memeData = {
-                title: `Meme ${new Date().toLocaleString()}`,
+                title: memeName,
                 imageUrl: imageData,
-                type: 'saved'
+                type: 'saved',
+                timestamp: new Date().getTime()
             };
             
             const result = await MemeService.saveMeme(memeData);
-            console.log('Meme salvo com ID:', result.id); // Debug
-            alert('Meme salvo com sucesso!');
+            console.log('Meme salvo com ID:', result.id);
+            
+            // Atualizar modal para sucesso após um pequeno delay para mostrar o loading
+            setTimeout(() => {
+                updateModalToSuccess();
+            }, 500);
         } catch (error) {
             console.error('Error saving meme:', error);
-            alert('Erro ao salvar o meme. Por favor, tente novamente.');
+            updateModalToError();
         }
+    }
+
+    // Botão Salvar
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.addEventListener('click', async () => {
+        if (!imageLoaded) {
+            const currentLang = isEnglish ? 'en' : 'pt';
+            showModal(translations[currentLang]['load-image-first']);
+            return;
+        }
+
+        const currentLang = isEnglish ? 'en' : 'pt';
+        showConfirmModal(translations[currentLang]['confirm-save'], () => {
+            showNameInputModal();
+        });
     });
 
     // Evento de clique para selecionar texto

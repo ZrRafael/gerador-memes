@@ -28,7 +28,11 @@
     </nav>
 
     <div class="container">
-        <h1>Meus Memes</h1>
+        <h1 data-text="title">Meus Memes</h1>
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Buscar memes..." data-placeholder="search-placeholder">
+            <button type="button" class="search-clear" id="searchClear">✕</button>
+        </div>
         
         <div class="loading-state">
             <div class="loading-content">
@@ -51,5 +55,13 @@
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="services.js"></script>
     <script type="module" src="projects.js"></script>
+
+    <!-- Modal personalizado -->
+    <div class="custom-modal" id="customModal">
+        <div class="modal-content">
+            <p class="modal-message" id="modalMessage"></p>
+            <button class="modal-button" id="modalButton">OK</button>
+        </div>
+    </div>
 </body>
 </html> 

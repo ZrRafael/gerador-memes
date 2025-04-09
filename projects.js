@@ -16,10 +16,15 @@ document.addEventListener('DOMContentLoaded', () => {
             'download': 'Baixar',
             'delete': 'Excluir',
             'confirm-delete': 'Tem certeza que deseja excluir este meme?',
+            'confirm-download': 'Tem certeza que deseja baixar este meme?',
             'no-memes': 'Nenhum meme criado ainda. Vá para o Editor para criar seu primeiro meme!',
             'title': 'Meus Memes',
             'editor': 'Editor',
-            'projects': 'Projetos'
+            'projects': 'Projetos',
+            'ok': 'OK',
+            'error-loading': 'Erro ao carregar os memes. Por favor, tente novamente.',
+            'error-deleting': 'Erro ao excluir o meme. Por favor, tente novamente.',
+            'search-placeholder': 'Buscar memes...'
         },
         en: {
             'saved': 'Saved',
@@ -28,10 +33,15 @@ document.addEventListener('DOMContentLoaded', () => {
             'download': 'Download',
             'delete': 'Delete',
             'confirm-delete': 'Are you sure you want to delete this meme?',
+            'confirm-download': 'Are you sure you want to download this meme?',
             'no-memes': 'No memes created yet. Go to Editor to create your first meme!',
             'title': 'My Memes',
             'editor': 'Editor',
-            'projects': 'Projects'
+            'projects': 'Projects',
+            'ok': 'OK',
+            'error-loading': 'Error loading memes. Please try again.',
+            'error-deleting': 'Error deleting meme. Please try again.',
+            'search-placeholder': 'Search memes...'
         }
     };
 
@@ -93,6 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const timestamp = parseInt(element.getAttribute('data-timestamp'));
             element.textContent = `${translations[currentLang]['created-at']}: ${formatDate(new Date(timestamp), currentLang)}`;
         });
+
+        // Atualizar placeholder do campo de busca
+        const searchInput = document.getElementById('searchInput');
+        searchInput.placeholder = translations[currentLang]['search-placeholder'];
     }
 
     function formatDate(date, lang) {
@@ -117,31 +131,114 @@ document.addEventListener('DOMContentLoaded', () => {
         projectsGrid.style.display = 'grid';
     }
 
+    // Função para mostrar o modal personalizado
+    function showModal(message) {
+        const modal = document.getElementById('customModal');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalButton = document.getElementById('modalButton');
+        const currentLang = isEnglish ? 'en' : 'pt';
+
+        modalMessage.textContent = message;
+        modalButton.textContent = translations[currentLang].ok;
+
+        modal.classList.add('show');
+
+        modalButton.onclick = () => {
+            modal.classList.remove('show');
+        };
+    }
+
+    // Função para mostrar o modal de confirmação
+    function showConfirmModal(message, onConfirm) {
+        const modal = document.getElementById('customModal');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalButtons = document.getElementById('modalButtons');
+        const currentLang = isEnglish ? 'en' : 'pt';
+
+        // Remover o botão OK padrão
+        const defaultButton = document.getElementById('modalButton');
+        if (defaultButton) {
+            defaultButton.style.display = 'none';
+        }
+
+        modal.classList.add('confirm-modal');
+        modalMessage.textContent = message;
+
+        // Limpar botões existentes
+        if (modalButtons) {
+            modalButtons.remove();
+        }
+
+        // Criar novos botões
+        const buttonsDiv = document.createElement('div');
+        buttonsDiv.id = 'modalButtons';
+        buttonsDiv.className = 'modal-buttons';
+
+        const confirmBtn = document.createElement('button');
+        confirmBtn.className = 'modal-button confirm-btn';
+        confirmBtn.textContent = currentLang === 'pt' ? 'Confirmar' : 'Confirm';
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'modal-button cancel-btn';
+        cancelBtn.textContent = currentLang === 'pt' ? 'Cancelar' : 'Cancel';
+
+        buttonsDiv.appendChild(confirmBtn);
+        buttonsDiv.appendChild(cancelBtn);
+        modal.querySelector('.modal-content').appendChild(buttonsDiv);
+
+        modal.classList.add('show');
+
+        // Event listeners
+        confirmBtn.onclick = () => {
+            modal.classList.remove('show');
+            modal.classList.remove('confirm-modal');
+            if (defaultButton) {
+                defaultButton.style.display = 'block';
+            }
+            if (onConfirm) onConfirm();
+        };
+
+        cancelBtn.onclick = () => {
+            modal.classList.remove('show');
+            modal.classList.remove('confirm-modal');
+            if (defaultButton) {
+                defaultButton.style.display = 'block';
+            }
+        };
+    }
+
     async function loadProjects() {
+        console.log('Iniciando carregamento dos projetos...'); // Debug
         showLoading();
         
         try {
+            console.log('Buscando memes do serviço...'); // Debug
             const memes = await MemeService.getAllMemes();
             console.log('Memes carregados:', memes); // Debug
 
-            if (memes.length > 0) {
+            if (memes && memes.length > 0) {
+                console.log(`Encontrados ${memes.length} memes`); // Debug
                 projectsGrid.innerHTML = '';
                 
                 const fragment = document.createDocumentFragment();
-                memes.forEach(meme => {
+                memes.forEach((meme, index) => {
+                    console.log(`Criando card para meme ${index + 1}:`, meme); // Debug
                     const card = createProjectCard(meme);
                     fragment.appendChild(card);
                 });
                 
                 projectsGrid.appendChild(fragment);
+                console.log('Cards adicionados ao grid'); // Debug
                 hideLoading();
             } else {
+                console.log('Nenhum meme encontrado'); // Debug
                 loadingState.style.display = 'none';
                 emptyState.style.display = 'flex';
             }
         } catch (error) {
             console.error('Error loading memes:', error);
-            alert('Erro ao carregar os memes. Por favor, tente novamente.');
+            const currentLang = isEnglish ? 'en' : 'pt';
+            showModal(translations[currentLang]['error-loading']);
             hideLoading();
         }
     }
@@ -150,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Criando card para meme:', meme); // Debug
         const currentLang = isEnglish ? 'en' : 'pt';
         const card = document.createElement('div');
-        card.className = 'project-card';
+        card.className = 'project-card meme-card';
         
         // Usar o ID do documento do Firestore
         const docId = meme.docId;
@@ -164,8 +261,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         card.innerHTML = `
             <div class="project-info">
-                <h3 class="project-title">${meme.title}</h3>
-                <p class="project-date" data-timestamp="${meme.timestamp}">
+                <h3 class="project-title meme-title">${meme.title}</h3>
+                <p class="project-date meme-timestamp" data-timestamp="${meme.timestamp}">
                     ${translations[currentLang]['created-at']}: ${formatDate(new Date(meme.timestamp), currentLang)}
                 </p>
                 <p class="project-type" data-type="${meme.type}">
@@ -186,18 +283,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const deleteBtn = card.querySelector('.delete-btn');
 
         downloadBtn.addEventListener('click', () => {
-            // Criar um link temporário para download
-            const link = document.createElement('a');
-            link.href = meme.imageUrl;
-            link.download = `${meme.title}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const currentLang = isEnglish ? 'en' : 'pt';
+            showConfirmModal(translations[currentLang]['confirm-download'], () => {
+                // Criar um link temporário para download
+                const link = document.createElement('a');
+                link.href = meme.imageUrl;
+                link.download = `${meme.title}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
         });
 
         deleteBtn.addEventListener('click', async () => {
-            const confirmMessage = isEnglish ? translations.en['confirm-delete'] : translations.pt['confirm-delete'];
-            if (confirm(confirmMessage)) {
+            const currentLang = isEnglish ? 'en' : 'pt';
+            showConfirmModal(translations[currentLang]['confirm-delete'], async () => {
                 try {
                     console.log('Tentando deletar meme com ID do documento:', docId); // Debug
                     
@@ -224,13 +324,73 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } catch (error) {
                     console.error('Error deleting meme:', error);
-                    alert('Erro ao excluir o meme. Por favor, tente novamente.');
+                    const currentLang = isEnglish ? 'en' : 'pt';
+                    showModal(translations[currentLang]['error-deleting']);
                 }
-            }
+            });
         });
 
         return card;
     }
+
+    // Função de busca
+    const searchInput = document.getElementById('searchInput');
+    const searchClear = document.getElementById('searchClear');
+
+    // Função para mostrar/ocultar o botão clear
+    function toggleClearButton() {
+        searchClear.classList.toggle('visible', searchInput.value.length > 0);
+    }
+
+    // Função para limpar o campo de busca
+    function clearSearch() {
+        searchInput.value = '';
+        toggleClearButton();
+        // Dispara o evento input para atualizar a busca
+        searchInput.dispatchEvent(new Event('input'));
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const memeCards = document.querySelectorAll('.project-card');
+        const emptyState = document.querySelector('.empty-state');
+
+        toggleClearButton(); // Atualiza visibilidade do botão clear
+
+        let hasVisibleCards = false;
+
+        memeCards.forEach(card => {
+            const title = card.querySelector('.project-title')?.textContent.toLowerCase() || '';
+            const date = card.querySelector('.project-date')?.textContent.toLowerCase() || '';
+            
+            if (title.includes(searchTerm) || date.includes(searchTerm)) {
+                card.style.display = '';
+                hasVisibleCards = true;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Atualizar mensagem de estado vazio
+        if (!hasVisibleCards) {
+            if (searchTerm !== '') {
+                emptyState.style.display = 'flex';
+                emptyState.textContent = isEnglish 
+                    ? `No memes found matching "${searchTerm}"` 
+                    : `Nenhum meme encontrado com "${searchTerm}"`;
+            } else {
+                emptyState.style.display = 'none';
+                // Se não há termo de busca, mostrar todos os cards
+                memeCards.forEach(card => card.style.display = '');
+            }
+        } else {
+            emptyState.style.display = 'none';
+        }
+    });
+
+    // Adiciona evento de clique no botão clear
+    searchClear.addEventListener('click', clearSearch);
 
     // Inicializar
     loadProjects();
