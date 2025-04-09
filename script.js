@@ -1,3 +1,5 @@
+import MemeService from './services.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const imageInput = document.getElementById('imageInput');
     const memeImage = document.getElementById('memeImage');
@@ -22,38 +24,59 @@ document.addEventListener('DOMContentLoaded', () => {
             addtext: 'Adicionar Texto',
             applytoall: 'Aplicar a Todos',
             downloadmeme: 'Baixar Meme',
+            savememe: 'Salvar Meme',
             remove: 'Remover',
             color: 'Cor',
             size: 'Tamanho',
             text: 'Texto',
-            title: 'Gerador de Memes'
+            title: 'Gerador de Memes',
+            editor: 'Editor',
+            projects: 'Projetos'
         },
         en: {
             chooseimage: 'Choose Image',
             addtext: 'Add Text',
             applytoall: 'Apply to All',
             downloadmeme: 'Download Meme',
+            savememe: 'Save Meme',
             remove: 'Remove',
             color: 'Color',
             size: 'Size',
             text: 'Text',
-            title: 'Meme Generator'
+            title: 'Meme Generator',
+            editor: 'Editor',
+            projects: 'Projects'
         }
     };
 
     // Tema
-    themeToggle.setAttribute('data-theme', 'dark');
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeToggle.setAttribute('data-theme', 'light');
+    } else {
+        themeToggle.setAttribute('data-theme', 'dark');
+    }
+
     themeToggle.addEventListener('click', () => {
         const isDark = document.body.classList.contains('light-theme');
         document.body.classList.toggle('light-theme');
         themeToggle.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
     });
 
     // Idioma
+    const savedLanguage = localStorage.getItem('language');
+    isEnglish = savedLanguage === 'en';
+    if (isEnglish) {
+        languageToggle.querySelector('.lang-text').textContent = 'EN US';
+    }
+    
     languageToggle.addEventListener('click', () => {
         isEnglish = !isEnglish;
         const langText = languageToggle.querySelector('.lang-text');
         langText.textContent = isEnglish ? 'EN US' : 'BR PT';
+        localStorage.setItem('language', isEnglish ? 'en' : 'pt');
         updateTexts();
         updateAllTextOverlays();
     });
@@ -431,31 +454,132 @@ document.addEventListener('DOMContentLoaded', () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
-        canvas.width = memeImage.naturalWidth;
-        canvas.height = memeImage.naturalHeight;
+        // Reduzir o tamanho da imagem para no máximo 800x800 mantendo a proporção
+        let width = memeImage.naturalWidth;
+        let height = memeImage.naturalHeight;
+        const maxSize = 800;
         
-        ctx.drawImage(memeImage, 0, 0);
+        if (width > height) {
+            if (width > maxSize) {
+                height = Math.round((height * maxSize) / width);
+                width = maxSize;
+            }
+        } else {
+            if (height > maxSize) {
+                width = Math.round((width * maxSize) / height);
+                height = maxSize;
+            }
+        }
         
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Desenhar a imagem redimensionada
+        ctx.drawImage(memeImage, 0, 0, width, height);
+        
+        // Desenhar os textos
         const texts = document.querySelectorAll('.text-overlay');
         texts.forEach(text => {
             const x = parseFloat(text.getAttribute('data-x')) || 0;
             const y = parseFloat(text.getAttribute('data-y')) || 0;
             
-            ctx.font = `${text.style.fontSize || '30px'} Arial`;
+            // Ajustar o tamanho da fonte proporcionalmente
+            const originalSize = parseInt(text.style.fontSize) || 30;
+            const scale = width / memeImage.naturalWidth;
+            const fontSize = Math.round(originalSize * scale);
+            
+            ctx.font = `${fontSize}px Arial`;
             ctx.fillStyle = text.style.color || '#ffffff';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             
-            const textX = canvas.width / 2 + x;
-            const textY = canvas.height / 2 + y;
+            const textX = width / 2 + (x * scale);
+            const textY = height / 2 + (y * scale);
             
             ctx.fillText(text.textContent, textX, textY);
         });
         
+        // Para download, usar PNG sem compressão para melhor qualidade
+        const imageData = canvas.toDataURL('image/png');
         const link = document.createElement('a');
         link.download = 'meme.png';
-        link.href = canvas.toDataURL('image/png');
+        link.href = imageData;
         link.click();
+    });
+
+    // Botão Salvar
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.addEventListener('click', async () => {
+        if (!imageLoaded) {
+            alert('Por favor, carregue uma imagem primeiro!');
+            return;
+        }
+        
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Reduzir o tamanho da imagem para no máximo 800x800 mantendo a proporção
+        let width = memeImage.naturalWidth;
+        let height = memeImage.naturalHeight;
+        const maxSize = 800;
+        
+        if (width > height) {
+            if (width > maxSize) {
+                height = Math.round((height * maxSize) / width);
+                width = maxSize;
+            }
+        } else {
+            if (height > maxSize) {
+                width = Math.round((width * maxSize) / height);
+                height = maxSize;
+            }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Desenhar a imagem redimensionada
+        ctx.drawImage(memeImage, 0, 0, width, height);
+        
+        // Desenhar os textos
+        const texts = document.querySelectorAll('.text-overlay');
+        texts.forEach(text => {
+            const x = parseFloat(text.getAttribute('data-x')) || 0;
+            const y = parseFloat(text.getAttribute('data-y')) || 0;
+            
+            // Ajustar o tamanho da fonte proporcionalmente
+            const originalSize = parseInt(text.style.fontSize) || 30;
+            const scale = width / memeImage.naturalWidth;
+            const fontSize = Math.round(originalSize * scale);
+            
+            ctx.font = `${fontSize}px Arial`;
+            ctx.fillStyle = text.style.color || '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            const textX = width / 2 + (x * scale);
+            const textY = height / 2 + (y * scale);
+            
+            ctx.fillText(text.textContent, textX, textY);
+        });
+        
+        // Comprimir a imagem com qualidade 0.8
+        const imageData = canvas.toDataURL('image/jpeg', 0.8);
+        
+        try {
+            const memeData = {
+                title: `Meme ${new Date().toLocaleString()}`,
+                imageUrl: imageData,
+                type: 'saved'
+            };
+            
+            const result = await MemeService.saveMeme(memeData);
+            console.log('Meme salvo com ID:', result.id); // Debug
+            alert('Meme salvo com sucesso!');
+        } catch (error) {
+            console.error('Error saving meme:', error);
+            alert('Erro ao salvar o meme. Por favor, tente novamente.');
+        }
     });
 
     // Evento de clique para selecionar texto
@@ -464,5 +588,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (textElement) {
             selectText(textElement);
         }
+    });
+
+    // Navegação
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+        });
     });
 }); 

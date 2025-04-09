@@ -1,0 +1,32 @@
+.nav-bar {
+    background-color: var(--card-bg);
+    padding: 1rem;
+    box-shadow: var(--box-shadow);
+    margin-bottom: 1rem;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    background: var(--gradient);
+    color: white;
+}
+
+.nav-link.active {
+    background: var(--gradient);
+    color: white;
+} 

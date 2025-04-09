@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Memes - Gerador de Memes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="projects.css">
+</head>
+<body class="dark-theme">
+    <div class="theme-language-controls">
+        <div class="control-group">
+            <button id="themeToggle" class="theme-btn" data-theme="dark">
+                <span class="theme-icon"></span>
+            </button>
+            <button id="languageToggle" class="lang-btn">
+                <span class="lang-text">BR PT</span>
+            </button>
+        </div>
+    </div>
+
+    <nav class="nav-bar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-link" data-text="editor">Editor</a>
+            <a href="projects.html" class="nav-link active" data-text="projects">Projetos</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Meus Memes</h1>
+        
+        <div class="loading-state">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <p>Carregando...</p>
+            </div>
+        </div>
+
+        <div class="projects-grid">
+            <!-- Os cards dos memes serão inseridos aqui dinamicamente -->
+        </div>
+
+        <div class="empty-state">
+            <img src="empty-folder.svg" alt="Pasta vazia" class="empty-icon">
+            <p>Nenhum meme criado ainda. Vá para o Editor para criar seu primeiro meme!</p>
+            <a href="index.html" class="create-meme-btn">Criar primeiro meme</a>
+        </div>
+    </div>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="services.js"></script>
+    <script type="module" src="projects.js"></script>
+</body>
+</html> 
