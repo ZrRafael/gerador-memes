@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Memes - Gerador de Memes</title>
+    <link rel="icon" type="image/png" href="troll-face.png">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="nav.css">
     <link rel="stylesheet" href="projects.css">
@@ -24,6 +25,18 @@
         <div class="nav-container">
             <a href="index.html" class="nav-link" data-text="editor">Editor</a>
             <a href="projects.html" class="nav-link active" data-text="projects">Projetos</a>
+            <button class="menu-btn" id="menuBtn"></button>
+        </div>
+        <div class="dropdown" id="dropdown">
+            <div class="control-group">
+                <button id="themeToggleMobile" class="theme-btn" data-theme="dark">
+                    <span class="theme-icon"></span>
+                    <span class="theme-text">Tema</span>
+                </button>
+                <button id="languageToggleMobile" class="lang-btn">
+                    <span class="lang-text">BR PT</span>
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -55,6 +68,7 @@
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="services.js"></script>
     <script type="module" src="projects.js"></script>
+    <script type="module" src="mobile-menu.js"></script>
 
     <!-- Modal personalizado -->
     <div class="custom-modal" id="customModal">

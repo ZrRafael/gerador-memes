@@ -1,4 +1,5 @@
 import MemeService from './services.js';
+import { LanguageManager } from './language.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const imageInput = document.getElementById('imageInput');
@@ -90,32 +91,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Idioma
-    const savedLanguage = localStorage.getItem('language');
-    isEnglish = savedLanguage === 'en';
-    if (isEnglish) {
-        languageToggle.querySelector('.lang-text').textContent = 'EN US';
-    }
+    LanguageManager.updateLanguageButton(languageToggle);
     
     languageToggle.addEventListener('click', () => {
-        isEnglish = !isEnglish;
-        const langText = languageToggle.querySelector('.lang-text');
-        langText.textContent = isEnglish ? 'EN US' : 'BR PT';
-        localStorage.setItem('language', isEnglish ? 'en' : 'pt');
+        LanguageManager.toggleLanguage();
+        LanguageManager.updateLanguageButton(languageToggle);
+        updateTexts();
+        updateAllTextOverlays();
+    });
+
+    // Atualizar textos inicialmente
+    updateTexts();
+
+    // Escutar evento de atualização de textos
+    document.addEventListener('updateTexts', () => {
         updateTexts();
         updateAllTextOverlays();
     });
 
     function updateTexts() {
-        const currentLang = isEnglish ? 'en' : 'pt';
+        const currentLang = LanguageManager.getCurrentLanguage();
         
         // Atualizar título
-        document.querySelector('h1').textContent = translations[currentLang].title;
+        document.querySelector('h1').textContent = LanguageManager.getTranslation('title');
         
         // Atualizar textos dos botões
         document.querySelectorAll('[data-text]').forEach(element => {
             const key = element.getAttribute('data-text');
-            if (translations[currentLang][key]) {
-                element.textContent = translations[currentLang][key];
+            if (LanguageManager.getTranslation(key)) {
+                element.textContent = LanguageManager.getTranslation(key);
             }
         });
 
@@ -125,33 +129,31 @@ document.addEventListener('DOMContentLoaded', () => {
             const colorLabel = editor.querySelector('.text-editor-controls label:first-child');
             const sizeLabel = editor.querySelector('.text-editor-controls label:last-child');
             
-            if (removeBtn) removeBtn.textContent = translations[currentLang].remove;
+            if (removeBtn) removeBtn.textContent = LanguageManager.getTranslation('remove');
             if (colorLabel) {
                 const colorInput = colorLabel.querySelector('input');
-                colorLabel.innerHTML = `${translations[currentLang].color}: `;
+                colorLabel.innerHTML = `${LanguageManager.getTranslation('color')}: `;
                 colorLabel.appendChild(colorInput);
             }
             if (sizeLabel) {
                 const sizeInput = sizeLabel.querySelector('input');
-                sizeLabel.innerHTML = `${translations[currentLang].size}: `;
+                sizeLabel.innerHTML = `${LanguageManager.getTranslation('size')}: `;
                 sizeLabel.appendChild(sizeInput);
             }
         });
     }
 
     function updateAllTextOverlays() {
-        const currentLang = isEnglish ? 'en' : 'pt';
+        const currentLang = LanguageManager.getCurrentLanguage();
         document.querySelectorAll('.text-overlay').forEach(text => {
-            // Verifica se o texto segue o padrão padrão "Texto N" ou "Text N"
             const ptPattern = /^Texto\s+\d+$/;
             const enPattern = /^Text\s+\d+$/;
             
             if (ptPattern.test(text.textContent) || enPattern.test(text.textContent)) {
                 const number = text.textContent.match(/\d+$/)[0];
-                const newText = `${translations[currentLang].text} ${number}`;
+                const newText = `${LanguageManager.getTranslation('text')} ${number}`;
                 text.textContent = newText;
                 
-                // Atualiza também o título no editor
                 const editor = document.querySelector(`[data-text-id="${text.id}"]`);
                 if (editor) {
                     const title = editor.querySelector('.text-editor-title');

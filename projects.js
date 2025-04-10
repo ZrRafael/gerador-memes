@@ -1,4 +1,5 @@
 import MemeService from './services.js';
+import { LanguageManager } from './language.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('themeToggle');
@@ -6,44 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingState = document.querySelector('.loading-state');
     const projectsGrid = document.querySelector('.projects-grid');
     const emptyState = document.querySelector('.empty-state');
-    let isEnglish = false;
-
-    const translations = {
-        pt: {
-            'saved': 'Salvo',
-            'downloaded': 'Baixado',
-            'created-at': 'Criado em',
-            'download': 'Baixar',
-            'delete': 'Excluir',
-            'confirm-delete': 'Tem certeza que deseja excluir este meme?',
-            'confirm-download': 'Tem certeza que deseja baixar este meme?',
-            'no-memes': 'Nenhum meme criado ainda. Vá para o Editor para criar seu primeiro meme!',
-            'title': 'Meus Memes',
-            'editor': 'Editor',
-            'projects': 'Projetos',
-            'ok': 'OK',
-            'error-loading': 'Erro ao carregar os memes. Por favor, tente novamente.',
-            'error-deleting': 'Erro ao excluir o meme. Por favor, tente novamente.',
-            'search-placeholder': 'Buscar memes...'
-        },
-        en: {
-            'saved': 'Saved',
-            'downloaded': 'Downloaded',
-            'created-at': 'Created at',
-            'download': 'Download',
-            'delete': 'Delete',
-            'confirm-delete': 'Are you sure you want to delete this meme?',
-            'confirm-download': 'Are you sure you want to download this meme?',
-            'no-memes': 'No memes created yet. Go to Editor to create your first meme!',
-            'title': 'My Memes',
-            'editor': 'Editor',
-            'projects': 'Projects',
-            'ok': 'OK',
-            'error-loading': 'Error loading memes. Please try again.',
-            'error-deleting': 'Error deleting meme. Please try again.',
-            'search-placeholder': 'Search memes...'
-        }
-    };
 
     // Tema
     const savedTheme = localStorage.getItem('theme');
@@ -62,51 +25,53 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Idioma
-    const savedLanguage = localStorage.getItem('language');
-    isEnglish = savedLanguage === 'en';
-    if (isEnglish) {
-        languageToggle.querySelector('.lang-text').textContent = 'EN US';
-    }
+    LanguageManager.updateLanguageButton(languageToggle);
     
     languageToggle.addEventListener('click', () => {
-        isEnglish = !isEnglish;
-        const langText = languageToggle.querySelector('.lang-text');
-        langText.textContent = isEnglish ? 'EN US' : 'BR PT';
-        localStorage.setItem('language', isEnglish ? 'en' : 'pt');
+        LanguageManager.toggleLanguage();
+        LanguageManager.updateLanguageButton(languageToggle);
+        updateTexts();
+    });
+
+    // Atualizar textos inicialmente
+    updateTexts();
+
+    // Escutar evento de atualização de textos
+    document.addEventListener('updateTexts', () => {
         updateTexts();
     });
 
     function updateTexts() {
-        const currentLang = isEnglish ? 'en' : 'pt';
+        const currentLang = LanguageManager.getCurrentLanguage();
         
         // Atualizar título
-        document.querySelector('h1').textContent = translations[currentLang].title;
+        document.querySelector('h1').textContent = LanguageManager.getTranslation('title');
         
         // Atualizar textos dos botões
         document.querySelectorAll('[data-text]').forEach(element => {
             const key = element.getAttribute('data-text');
-            if (translations[currentLang][key]) {
-                element.textContent = translations[currentLang][key];
+            if (LanguageManager.getTranslation(key)) {
+                element.textContent = LanguageManager.getTranslation(key);
             }
         });
 
         // Atualizar textos dos cards
         document.querySelectorAll('.project-type').forEach(element => {
             const type = element.getAttribute('data-type');
-            if (translations[currentLang][type]) {
-                element.textContent = translations[currentLang][type];
+            if (LanguageManager.getTranslation(type)) {
+                element.textContent = LanguageManager.getTranslation(type);
             }
         });
 
         // Atualizar textos de data
         document.querySelectorAll('.project-date').forEach(element => {
             const timestamp = parseInt(element.getAttribute('data-timestamp'));
-            element.textContent = `${translations[currentLang]['created-at']}: ${formatDate(new Date(timestamp), currentLang)}`;
+            element.textContent = `${LanguageManager.getTranslation('created-at')}: ${formatDate(new Date(timestamp), currentLang)}`;
         });
 
         // Atualizar placeholder do campo de busca
         const searchInput = document.getElementById('searchInput');
-        searchInput.placeholder = translations[currentLang]['search-placeholder'];
+        searchInput.placeholder = LanguageManager.getTranslation('search-placeholder');
     }
 
     function formatDate(date, lang) {
@@ -131,15 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
         projectsGrid.style.display = 'grid';
     }
 
-    // Função para mostrar o modal personalizado
     function showModal(message) {
         const modal = document.getElementById('customModal');
         const modalMessage = document.getElementById('modalMessage');
         const modalButton = document.getElementById('modalButton');
-        const currentLang = isEnglish ? 'en' : 'pt';
 
         modalMessage.textContent = message;
-        modalButton.textContent = translations[currentLang].ok;
+        modalButton.textContent = LanguageManager.getTranslation('ok');
 
         modal.classList.add('show');
 
@@ -148,14 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Função para mostrar o modal de confirmação
     function showConfirmModal(message, onConfirm) {
         const modal = document.getElementById('customModal');
         const modalMessage = document.getElementById('modalMessage');
         const modalButtons = document.getElementById('modalButtons');
-        const currentLang = isEnglish ? 'en' : 'pt';
 
-        // Remover o botão OK padrão
         const defaultButton = document.getElementById('modalButton');
         if (defaultButton) {
             defaultButton.style.display = 'none';
@@ -164,23 +124,21 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.classList.add('confirm-modal');
         modalMessage.textContent = message;
 
-        // Limpar botões existentes
         if (modalButtons) {
             modalButtons.remove();
         }
 
-        // Criar novos botões
         const buttonsDiv = document.createElement('div');
         buttonsDiv.id = 'modalButtons';
         buttonsDiv.className = 'modal-buttons';
 
         const confirmBtn = document.createElement('button');
         confirmBtn.className = 'modal-button confirm-btn';
-        confirmBtn.textContent = currentLang === 'pt' ? 'Confirmar' : 'Confirm';
+        confirmBtn.textContent = LanguageManager.getCurrentLanguage() === 'pt' ? 'Confirmar' : 'Confirm';
 
         const cancelBtn = document.createElement('button');
         cancelBtn.className = 'modal-button cancel-btn';
-        cancelBtn.textContent = currentLang === 'pt' ? 'Cancelar' : 'Cancel';
+        cancelBtn.textContent = LanguageManager.getCurrentLanguage() === 'pt' ? 'Cancelar' : 'Cancel';
 
         buttonsDiv.appendChild(confirmBtn);
         buttonsDiv.appendChild(cancelBtn);
@@ -188,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         modal.classList.add('show');
 
-        // Event listeners
         confirmBtn.onclick = () => {
             modal.classList.remove('show');
             modal.classList.remove('confirm-modal');
@@ -237,15 +194,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Error loading memes:', error);
-            const currentLang = isEnglish ? 'en' : 'pt';
-            showModal(translations[currentLang]['error-loading']);
+            showModal(LanguageManager.getTranslation('error-loading'));
             hideLoading();
         }
     }
 
     function createProjectCard(meme) {
         console.log('Criando card para meme:', meme); // Debug
-        const currentLang = isEnglish ? 'en' : 'pt';
+        const currentLang = LanguageManager.getCurrentLanguage();
         const card = document.createElement('div');
         card.className = 'project-card meme-card';
         
@@ -263,15 +219,15 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="project-info">
                 <h3 class="project-title meme-title">${meme.title}</h3>
                 <p class="project-date meme-timestamp" data-timestamp="${meme.timestamp}">
-                    ${translations[currentLang]['created-at']}: ${formatDate(new Date(meme.timestamp), currentLang)}
+                    ${LanguageManager.getTranslation('created-at')}: ${formatDate(new Date(meme.timestamp), currentLang)}
                 </p>
                 <p class="project-type" data-type="${meme.type}">
-                    ${translations[currentLang][meme.type]}
+                    ${LanguageManager.getTranslation(meme.type)}
                 </p>
             </div>
             <div class="project-actions">
-                <button class="project-btn download-btn" data-text="download">${translations[currentLang]['download']}</button>
-                <button class="project-btn delete-btn" data-text="delete">${translations[currentLang]['delete']}</button>
+                <button class="project-btn download-btn" data-text="download">${LanguageManager.getTranslation('download')}</button>
+                <button class="project-btn delete-btn" data-text="delete">${LanguageManager.getTranslation('delete')}</button>
             </div>
         `;
 
@@ -283,8 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const deleteBtn = card.querySelector('.delete-btn');
 
         downloadBtn.addEventListener('click', () => {
-            const currentLang = isEnglish ? 'en' : 'pt';
-            showConfirmModal(translations[currentLang]['confirm-download'], () => {
+            showConfirmModal(LanguageManager.getTranslation('confirm-download'), () => {
                 // Criar um link temporário para download
                 const link = document.createElement('a');
                 link.href = meme.imageUrl;
@@ -296,8 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         deleteBtn.addEventListener('click', async () => {
-            const currentLang = isEnglish ? 'en' : 'pt';
-            showConfirmModal(translations[currentLang]['confirm-delete'], async () => {
+            showConfirmModal(LanguageManager.getTranslation('confirm-delete'), async () => {
                 try {
                     console.log('Tentando deletar meme com ID do documento:', docId); // Debug
                     
@@ -324,8 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } catch (error) {
                     console.error('Error deleting meme:', error);
-                    const currentLang = isEnglish ? 'en' : 'pt';
-                    showModal(translations[currentLang]['error-deleting']);
+                    showModal(LanguageManager.getTranslation('error-deleting'));
                 }
             });
         });
@@ -376,9 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!hasVisibleCards) {
             if (searchTerm !== '') {
                 emptyState.style.display = 'flex';
-                emptyState.textContent = isEnglish 
-                    ? `No memes found matching "${searchTerm}"` 
-                    : `Nenhum meme encontrado com "${searchTerm}"`;
+                emptyState.textContent = LanguageManager.getTranslation('no-memes');
             } else {
                 emptyState.style.display = 'none';
                 // Se não há termo de busca, mostrar todos os cards
