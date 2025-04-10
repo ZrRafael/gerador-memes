@@ -2,6 +2,8 @@
   "name": "meme-generator-backend",
   "version": "1.0.0",
   "description": "Backend for Meme Generator",
+  "author": "Rafael Augusto",
+  "license": "MIT",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

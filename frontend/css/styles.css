@@ -846,7 +846,7 @@ input[type="color"]:hover {
     width: 100%;
     max-width: 400px;
     margin: 0;
-    padding: 0 20px;
+    padding: 0px;
     position: relative;
 }
 

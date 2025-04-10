@@ -57,10 +57,7 @@
         <div class="controls">
             <div class="text-controls">
                 <button id="addTextBtn" class="control-btn" data-text="addtext">Adicionar Texto</button>
-                <div class="apply-all-container">
-                    <button id="applyToAllBtn" class="control-btn" data-text="applytoall">Aplicar a Todos</button>
-                    <button id="applyToAllHelpBtn" class="help-btn" aria-label="Ajuda">?</button>
-                </div>
+                <button id="applyToAllBtn" class="control-btn" data-text="applytoall" data-tooltip="Aplica o estilo (cor e tamanho) do primeiro texto aos demais textos">Aplicar a Todos</button>
             </div>
 
             <div class="text-editors">
@@ -74,15 +71,11 @@
         </div>
     </div>
     
-    <footer class="footer">
-        <p class="copyright" data-text="copyright">© 2025 Rafael Augusto. Todos os Direitos Reservados.</p>
-    </footer>
-
-    <script type="module" src="../backend/firebase-config.js"></script>
-    <script type="module" src="./Services/services.js"></script>
-    <script type="module" src="./js/components/script.js"></script>
-    <script type="module" src="./js/components/mobile-menu.js"></script>
-    <script type="module" src="./js/components/language.js"></script>
+    <script type="module" src="../firebase-config.js"></script>
+    <script type="module" src="../services.js"></script>
+    <script type="module" src="../js/components/script.js"></script>
+    <script type="module" src="../js/components/mobile-menu.js"></script>
+    <script type="module" src="../js/components/language.js"></script>
 
     <!-- Modal personalizado -->
     <div class="custom-modal" id="customModal">
