@@ -927,7 +927,8 @@ input[type="color"]:hover {
     text-align: center;
     padding: 20px;
     margin-top: 40px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    font-size: 14px;
 }
 
 .light-theme .footer {
