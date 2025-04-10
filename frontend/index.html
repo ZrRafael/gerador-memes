@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Memes</title>
-    <link rel="icon" type="image/png" href="troll-face.png">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="nav.css">
+    <link rel="icon" type="image/png" href="./assets/images/troll-face.png">
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/nav.css">
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 </head>
 <body class="dark-theme">
@@ -23,8 +23,8 @@
 
     <nav class="nav-bar">
         <div class="nav-container">
-            <a href="index.html" class="nav-link active" data-text="editor">Editor</a>
-            <a href="projects.html" class="nav-link" data-text="projects">Projetos</a>
+            <a href="./" class="nav-link active" data-text="editor">Editor</a>
+            <a href="./projects.html" class="nav-link" data-text="projects">Projetos</a>
             <button class="menu-btn" id="menuBtn"></button>
         </div>
         <div class="dropdown" id="dropdown">
@@ -57,7 +57,10 @@
         <div class="controls">
             <div class="text-controls">
                 <button id="addTextBtn" class="control-btn" data-text="addtext">Adicionar Texto</button>
-                <button id="applyToAllBtn" class="control-btn" data-text="applytoall" data-tooltip="Aplica o estilo (cor e tamanho) do primeiro texto aos demais textos">Aplicar a Todos</button>
+                <div class="apply-all-container">
+                    <button id="applyToAllBtn" class="control-btn" data-text="applytoall">Aplicar a Todos</button>
+                    <button id="applyToAllHelpBtn" class="help-btn" aria-label="Ajuda">?</button>
+                </div>
             </div>
 
             <div class="text-editors">
@@ -71,10 +74,15 @@
         </div>
     </div>
     
-    <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="services.js"></script>
-    <script type="module" src="script.js"></script>
-    <script type="module" src="mobile-menu.js"></script>
+    <footer class="footer">
+        <p class="copyright" data-text="copyright">© 2025 Rafael Augusto. Todos os Direitos Reservados.</p>
+    </footer>
+
+    <script type="module" src="../backend/firebase-config.js"></script>
+    <script type="module" src="./Services/services.js"></script>
+    <script type="module" src="./js/components/script.js"></script>
+    <script type="module" src="./js/components/mobile-menu.js"></script>
+    <script type="module" src="./js/components/language.js"></script>
 
     <!-- Modal personalizado -->
     <div class="custom-modal" id="customModal">

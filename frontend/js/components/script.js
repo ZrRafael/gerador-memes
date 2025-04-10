@@ -1,4 +1,4 @@
-import MemeService from './services.js';
+import MemeService from '../../Services/services.js';
 import { LanguageManager } from './language.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadSection = document.querySelector('.upload-section');
     const addTextBtn = document.getElementById('addTextBtn');
     const applyToAllBtn = document.getElementById('applyToAllBtn');
+    const applyToAllHelpBtn = document.getElementById('applyToAllHelpBtn');
     const textEditors = document.querySelector('.text-editors');
     const themeToggle = document.getElementById('themeToggle');
     const languageToggle = document.getElementById('languageToggle');
@@ -44,7 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
             'error-saving': 'Erro ao salvar o meme. Por favor, tente novamente.',
             'enter-meme-name': 'Digite um nome para o meme:',
             'name-exists': 'Este nome já está em uso. Por favor, escolha outro.',
-            'name-required': 'O nome do meme é obrigatório.'
+            'name-required': 'O nome do meme é obrigatório.',
+            'apply-to-all-explanation': 'Este botão aplica o estilo do primeiro texto selecionado a todos os outros textos. Use com cuidado para evitar estilos inconsistentes.'
         },
         en: {
             chooseimage: 'Choose Image',
@@ -70,7 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
             'error-saving': 'Error saving meme. Please try again.',
             'enter-meme-name': 'Enter a name for the meme:',
             'name-exists': 'This name is already in use. Please choose another one.',
-            'name-required': 'Meme name is required.'
+            'name-required': 'Meme name is required.',
+            'apply-to-all-explanation': 'This button applies the style of the first selected text to all other texts. Use with caution to avoid inconsistent styles.'
         }
     };
 
@@ -469,6 +472,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (sizeInput) sizeInput.value = parseInt(firstTextSize);
                 }
             }
+        });
+    });
+
+    // Handler para o botão de ajuda do "Aplicar a Todos"
+    applyToAllHelpBtn.addEventListener('click', () => {
+        const modal = document.createElement('div');
+        modal.className = 'custom-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-message">
+                    ${LanguageManager.getTranslation('apply-to-all-explanation')}
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-button">${LanguageManager.getTranslation('ok')}</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        setTimeout(() => modal.classList.add('show'), 10);
+
+        const okButton = modal.querySelector('.modal-button');
+        okButton.addEventListener('click', () => {
+            modal.classList.remove('show');
+            setTimeout(() => modal.remove(), 300);
         });
     });
 

@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
 const multer = require('multer');
+const path = require('path');
 
 const app = express();
 
@@ -10,6 +11,32 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Serve static files from root directory first (for JS files)
+app.use(express.static(path.join(__dirname, '../')));
+
+// Then serve static files from frontend directory
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// API Routes
+app.get('/api/memes', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM memes ORDER BY created_at DESC');
+        res.json(rows);
+    } catch (error) {
+        console.error('Error fetching memes:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Handle all other routes by serving index.html from frontend
+app.get('*', (req, res) => {
+    if (req.path.startsWith('/api')) {
+        res.status(404).json({ error: 'API endpoint not found' });
+    } else {
+        res.sendFile(path.join(__dirname, '../frontend/index.html'));
+    }
+});
 
 // Database connection
 const pool = mysql.createPool({
@@ -43,17 +70,6 @@ async function initializeDatabase() {
 initializeDatabase();
 
 // Routes
-// Get all memes
-app.get('/api/memes', async (req, res) => {
-    try {
-        const [rows] = await pool.query('SELECT * FROM memes ORDER BY created_at DESC');
-        res.json(rows);
-    } catch (error) {
-        console.error('Error fetching memes:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
 // Save a new meme
 app.post('/api/memes', async (req, res) => {
     const { id, title, imageUrl, type } = req.body;

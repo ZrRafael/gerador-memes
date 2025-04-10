@@ -1,5 +1,5 @@
-import MemeService from './services.js';
-import { LanguageManager } from './language.js';
+import MemeService from '../../Services/services.js';
+import { LanguageManager } from '../components/language.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('themeToggle');

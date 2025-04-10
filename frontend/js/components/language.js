@@ -6,6 +6,7 @@ export const LanguageManager = {
             chooseimage: 'Escolher Imagem',
             addtext: 'Adicionar Texto',
             applytoall: 'Aplicar a Todos',
+            'apply-to-all-explanation': 'Aplicar o mesmo estilo do texto "1" a todos os outros textos',
             downloadmeme: 'Baixar Meme',
             savememe: 'Salvar Meme',
             remove: 'Remover',
@@ -36,12 +37,14 @@ export const LanguageManager = {
             'no-memes': 'Nenhum meme criado ainda. Vá para o Editor para criar seu primeiro meme!',
             'error-loading': 'Erro ao carregar os memes. Por favor, tente novamente.',
             'error-deleting': 'Erro ao excluir o meme. Por favor, tente novamente.',
-            'search-placeholder': 'Buscar memes...'
+            'search-placeholder': 'Buscar memes...',
+            'copyright': '© 2025 Rafael Augusto. Todos os Direitos Reservados.'
         },
         en: {
             chooseimage: 'Choose Image',
             addtext: 'Add Text',
             applytoall: 'Apply to All',
+            'apply-to-all-explanation': 'Apply the same style from text "1" to all other texts',
             downloadmeme: 'Download Meme',
             savememe: 'Save Meme',
             remove: 'Remove',
@@ -72,7 +75,8 @@ export const LanguageManager = {
             'no-memes': 'No memes created yet. Go to Editor to create your first meme!',
             'error-loading': 'Error loading memes. Please try again.',
             'error-deleting': 'Error deleting meme. Please try again.',
-            'search-placeholder': 'Search memes...'
+            'search-placeholder': 'Search memes...',
+            'copyright': '© 2025 Rafael Augusto. All Rights Reserved.'
         }
     },
 

@@ -13,6 +13,11 @@
     gap: 2rem;
 }
 
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
 .nav-link {
     color: var(--text-color);
     text-decoration: none;
@@ -51,14 +56,20 @@
     display: block;
     width: 48px;
     height: 48px;
-    background-image: url('menu-bar claro.png');
+    background-image: url('../assets/images/menu-bar claro.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 }
 
+/* No tema claro, usa o ícone escuro */
 .light-theme .menu-btn::before {
-    background-image: url('menu-bar escuro.png');
+    background-image: url('../assets/images/menu-bar escuro.png');
+}
+
+/* No tema escuro, usa o ícone claro (já é o padrão) */
+[data-theme="dark"] .menu-btn::before {
+    background-image: url('../assets/images/menu-bar claro.png');
 }
 
 /* Dropdown Menu */

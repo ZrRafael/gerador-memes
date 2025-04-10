@@ -612,6 +612,16 @@ input[type="color"]:hover {
         width: 100%;
         text-align: center;
     }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .download-btn, .save-btn {
+        flex: none;
+        width: 100%;
+    }
     
     .text-overlay {
         max-width: 90%;
@@ -883,4 +893,49 @@ input[type="color"]:hover {
 
 .search-clear.visible {
     display: block;
+}
+
+.apply-all-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.help-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--gradient);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(26, 35, 126, 0.3);
+}
+
+.help-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 35, 126, 0.4);
+}
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.light-theme .footer {
+    border-top-color: rgba(0, 0, 0, 0.1);
+}
+
+.copyright {
+    font-size: 14px;
+    color: var(--text-color);
+    opacity: 0.8;
 } 
