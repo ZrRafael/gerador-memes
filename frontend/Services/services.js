@@ -1,4 +1,4 @@
-import { db } from '../../backend/firebase-config.js';
+import { db } from '../firebase-config.js';
 import { 
     collection, 
     getDocs, 
